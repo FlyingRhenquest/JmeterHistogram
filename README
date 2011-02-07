@@ -1,0 +1,29 @@
+This is a histogram extractor for Jmeter. Use a sampler of some sort to
+get an image into the sample result, then add this extractor to the
+sampler. It will create a heaping helping of jmeter variables representing
+the red, green and blue pixel count at each image intensity (0-255.)
+It will also provide total nonzero bucket counts for red, green and blue.
+If the image is monochrome/transparent, the bucket counts will be 1 each,
+which might be a handy way to tell if the image has content in it.
+
+It also creates an image_found variable which will be false if the sampler
+did not have a recognizable image in it.
+
+This extractor uses JAI to create the histogram, so you need to install
+JAI (1.3) into your jmeter/lib directory. I don't muck around with the
+hardware acceleration and it probably doesn't buy you anything here, so
+feel free to use the non-accelerated version.
+
+This extractor uses java image IO to read the image from the sampler.
+If your image format requires an image IO plugin, you should just be able
+to drop it into your jmeter lib dir.
+
+Building:
+
+I use maven. The jmeter guys don't like maven and I do. I haven't found a
+reliable maven repository for jmeter, so I just point the build to my local
+install dirs. Build should work if you have jmeter installed in home, but
+YMMV.
+
+"mvn package" ought to do the trick. If it doesn't, take a look at the pom.xml
+and make sure your maven is looking in the right place for jmeter and JAI.
