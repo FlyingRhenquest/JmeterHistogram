@@ -67,6 +67,12 @@ public class JmeterHistogram extends AbstractTestElement implements PostProcesso
    */
 
   private static final String histogramNbytes = "histogram_nbytes";
+  
+  /**
+   * Variable to store histogram number of bands in
+   */
+
+  private static final String histogramNbands = "histogram_nbands";
 
   /**
    * Grabs an image from a sampler and generates a histogram using
@@ -80,6 +86,7 @@ public class JmeterHistogram extends AbstractTestElement implements PostProcesso
     ByteArrayInputStream resultStream = new ByteArrayInputStream(previousResult.getResponseData());
     vars.put(histogramNbytes, Integer.toString(previousResult.getBytes()));
     BufferedImage image = null;
+    int nbands = 0;
     try {
       image = ImageIO.read(resultStream);
     } catch (java.io.IOException e) {
@@ -99,10 +106,21 @@ public class JmeterHistogram extends AbstractTestElement implements PostProcesso
     int redBuckets = 0;
     int greenBuckets = 0;
     int blueBuckets = 0;
+    nbands = hist.getNumBands();
+    vars.put(histogramNbands, Integer.toString(nbands));
+
     for (int i = 0; i < hist.getNumBins()[0]; i++) {
       int red = hist.getBinSize(0, i);
-      int green = hist.getBinSize(1, i);
-      int blue = hist.getBinSize(2, i);
+      int green = 0;
+      int blue = 0;
+
+      // If it's a B&W image there might be an alpha band but I'm not going
+      // to worry about it.
+
+      if (nbands > 2) {
+        green = hist.getBinSize(1, i);
+        blue = hist.getBinSize(2, i);
+      }
       String counter = Integer.toString(i);
       if (red > 0) {
         redBuckets++;
